@@ -15,15 +15,11 @@ export default function Register() {
 
   const onSubmit = async data => {
     try {
-      const res = await fetch('/api/register.php', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      const payload = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(payload.error || 'Registration failed');
-
+      const res = await fetch('/api/register.php', { /* … */ });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Registration failed');
+      }
       toast.success('Account created! Please log in.');
       navigate('/login');
     } catch (e) {
