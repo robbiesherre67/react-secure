@@ -1,0 +1,47 @@
+stages:
+  - test-frontend
+  - test-backend
+
+# Front-end job: runs your React tests with Node.js
+frontend-tests:
+  image: node:18
+  stage: test-frontend
+  before_script:
+    - cd $CI_PROJECT_DIR            # repo root
+    - npm ci
+  script:
+    - npm test -- --watchAll=false
+  only:
+    - main
+    - merge_requests
+
+# Back-end job: runs your PHP API tests against a MySQL service
+backend-tests:
+  image: php:8.1-cli
+  stage: test-backend
+  services:
+    - name: mysql:8.0
+      alias: db
+  variables:
+    MYSQL_DATABASE: reactsecure
+    MYSQL_ROOT_PASSWORD: rootpassword
+    MYSQL_USER: reactuser
+    MYSQL_PASSWORD: StrongPass123!
+    DB_HOST: db
+    DB_NAME: reactsecure
+    DB_USER: reactuser
+    DB_PASS: StrongPass123!
+  before_script:
+    - apt-get update && apt-get install -y default-mysql-client
+    # wait for MySQL to be ready
+    - until mysqladmin ping -h"$DB_HOST" -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" --silent; do
+        echo "Waiting for MySQL…";
+        sleep 2;
+      done
+    - cd $CI_PROJECT_DIR/backend
+    - chmod +x test-backend.sh
+  script:
+    - ./test-backend.sh
+  only:
+    - main
+    - merge_requests
