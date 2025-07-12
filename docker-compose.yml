@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=reactsecure
+      - MYSQL_USER=reactuser
+      - MYSQL_PASSWORD=StrongPass123!
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      - db            # <- simple dependency, no healthcheck
+    environment:
+      - DB_HOST=db
+      - DB_NAME=reactsecure
+      - DB_USER=reactuser
+      - DB_PASS=StrongPass123!
+    ports:
+      - "8000:80"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  db_data:
