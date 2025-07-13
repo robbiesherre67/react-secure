@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend  # PHP backend folder
+        working-directory: ./backend  # switch into your backend folder
     services:
       mysql:
         image: mysql:8.0
@@ -36,42 +36,33 @@ jobs:
           MYSQL_DATABASE: reactsecure
           MYSQL_USER: reactuser
           MYSQL_PASSWORD: StrongPass123!
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     steps:
       - uses: actions/checkout@v3
 
-      - name: Show networking info
-        run: |
-          echo "Hosts file:"
-          cat /etc/hosts
-          echo "--- DNS resolution for mysql ---"
-          sudo apt-get update -qq
-          sudo apt-get install -qq -y dnsutils netcat-openbsd
-          nslookup mysql || echo "nslookup failed"
-          echo "--- Testing raw TCP to mysql:3306 ---"
-          nc -vz mysql 3306 || echo "nc failed"
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: pdo_mysql
 
-      - name: Install MySQL client
-        env:
-          DEBIAN_FRONTEND: noninteractive
+      - name: Start PHP built-in server
+        # serve the backend directory on port 8000 in the background
+        run: php -S 127.0.0.1:8000 -t . &
+      
+      - name: Wait for PHP server to be ready
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -qq -y default-mysql-client
-
-      - name: Test direct MySQL client
-        run: |
-          echo "Testing MySQL client:"
-          mysql -hmysql -uroot -prootpassword -e "SELECT 1" || echo "mysql command failed"
-
-      - name: List backend directory
-        run: ls -R .
-
-      - name: Wait for MySQL to be ready
-        run: |
-          for i in {1..30}; do
-            mysql -hmysql -uroot -prootpassword -e "SELECT 1" && break
-            echo "Waiting for MySQL… ($i)"
+          for i in {1..20}; do
+            curl --silent --fail http://127.0.0.1:8000/register.php && break
+            echo "Waiting for PHP server… ($i)"
             sleep 2
           done
 
       - name: Run backend tests
+        # now that both MySQL service and PHP server are up, run your test script
         run: bash test-backend.sh
