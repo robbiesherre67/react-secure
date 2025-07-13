@@ -29,7 +29,7 @@ jobs:
       run:
         working-directory: ./backend  # PHP backend folder
     env:
-      DB_HOST: db
+      DB_HOST: 127.0.0.1
       DB_NAME: reactsecure
       DB_USER: reactuser
       DB_PASS: StrongPass123!
@@ -41,11 +41,7 @@ jobs:
           MYSQL_DATABASE: reactsecure
           MYSQL_USER: reactuser
           MYSQL_PASSWORD: StrongPass123!
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
+        # no ports necessary; GH Actions maps the service to localhost
     steps:
       - uses: actions/checkout@v3
 
@@ -55,21 +51,28 @@ jobs:
           php-version: '8.1'
           extensions: pdo_mysql
 
-      - name: Wait for MySQL
+      - name: Install MySQL client
+        run: |
+          apt-get update -qq
+          apt-get install -qq -y default-mysql-client
+
+      - name: Wait for MySQL to be ready
         run: |
           for i in {1..30}; do
-            dockerize -wait tcp://localhost:3306 -timeout 1s && break || \
-            echo "Waiting for MySQL… ($i)" && sleep 2
+            mysql -h127.0.0.1 -uroot -prootpassword -e "SELECT 1" && break
+            echo "Waiting for MySQL… ($i)"
+            sleep 2
           done
 
-      - name: Start PHP built-in server
-        run: php -S 127.0.0.1:8000 -t .
+      - name: Start PHP built‐in server
+        run: php -S 127.0.0.1:8000 -t . &
 
-      - name: Wait for PHP server
+      - name: Wait for PHP endpoint
         run: |
           for i in {1..20}; do
             curl --silent --fail http://127.0.0.1:8000/register.php && break
-            echo "Waiting for PHP… ($i)" && sleep 1
+            echo "Waiting for PHP… ($i)"
+            sleep 2
           done
 
       - name: Run backend tests
