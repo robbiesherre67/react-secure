@@ -1,54 +1,24 @@
-name: CI
+   backend:
+     runs-on: ubuntu-latest
+     defaults:
+       run:
+         working-directory: ./backend
+     services:
+@@
+     steps:
+       - uses: actions/checkout@v3
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
++      # DEBUG: show backend folder contents
++      - name: List backend directory
++        run: ls -R .
 
-jobs:
-  frontend:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .    # React app lives at repo root
-    steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Install dependencies
-        run: npm ci
-      - name: Run front-end tests
-        run: npm test
+       - name: Wait for MySQL
+         run: |
+           for i in {1..10}; do
+             mysqladmin ping -h127.0.0.1 -uroot -prootpassword --silent && break
+             echo "Waiting for MySQL… ($i)"
+             sleep 2
+           done
 
-  backend:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./backend  # PHP backend folder
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: rootpassword
-          MYSQL_DATABASE: reactsecure
-          MYSQL_USER: reactuser
-          MYSQL_PASSWORD: StrongPass123!
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-    steps:
-      - uses: actions/checkout@v3
-      - name: Wait for MySQL
-        run: |
-          for i in {1..10}; do
-            mysqladmin ping -h127.0.0.1 -uroot -prootpassword --silent && break
-            echo "Waiting for MySQL… ($i)"
-            sleep 2
-          done
-      - name: Run backend tests
-        run: bash test-backend.sh
+       - name: Run backend tests
+         run: bash test-backend.sh
