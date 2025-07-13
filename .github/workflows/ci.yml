@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: .    # React app root
+        working-directory: .    # React app at repo root
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js
@@ -29,7 +29,7 @@ jobs:
       run:
         working-directory: ./backend  # PHP backend folder
     env:
-      DB_HOST: mysql
+      DB_HOST: 127.0.0.1
       DB_NAME: reactsecure
       DB_USER: reactuser
       DB_PASS: StrongPass123!
@@ -41,7 +41,13 @@ jobs:
           MYSQL_DATABASE: reactsecure
           MYSQL_USER: reactuser
           MYSQL_PASSWORD: StrongPass123!
-        # no ports: GitHub Actions makes it available via the hostname `mysql`
+        ports:
+          - 3306:3306          # expose MySQL on localhost:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
 
     steps:
       - uses: actions/checkout@v3
@@ -52,22 +58,17 @@ jobs:
           php-version: '8.1'
           extensions: pdo_mysql
 
-      - name: Install MySQL client
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -qq -y default-mysql-client
-
-      - name: Wait for MySQL service
+      - name: Wait for MySQL to be ready
         run: |
           for i in {1..30}; do
-            mysql -hmysql -uroot -prootpassword -e "SELECT 1" && break
+            mysql -h127.0.0.1 -uroot -prootpassword -e "SELECT 1" && break
             echo "Waiting for MySQL… ($i)"
             sleep 2
           done
 
       - name: Import database schema
         run: |
-          mysql -hmysql -uroot -prootpassword reactsecure < schema.sql
+          mysql -h127.0.0.1 -uroot -prootpassword reactsecure < schema.sql
 
       - name: Start PHP built-in server
         run: php -S 127.0.0.1:8000 -t . &
