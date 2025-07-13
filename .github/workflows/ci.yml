@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: .    # React app
+        working-directory: .    # React app at repo root
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js
@@ -41,6 +41,7 @@ jobs:
           MYSQL_DATABASE: reactsecure
           MYSQL_USER: reactuser
           MYSQL_PASSWORD: StrongPass123!
+        # no ports needed; runner maps it to localhost:3306
 
     steps:
       - uses: actions/checkout@v3
@@ -63,6 +64,11 @@ jobs:
             echo "Waiting for MySQL… ($i)"
             sleep 2
           done
+
+      - name: Import database schema
+        # this will create your 'users' table before PHP hits it
+        run: |
+          mysql -h127.0.0.1 -uroot -prootpassword reactsecure < schema.sql
 
       - name: Start PHP built-in server
         run: php -S 127.0.0.1:8000 -t . &
