@@ -4,13 +4,23 @@
        run:
          working-directory: ./backend
      services:
-@@
+       mysql:
+         image: mysql:8.0
+         env:
+           MYSQL_ROOT_PASSWORD: rootpassword
+           MYSQL_DATABASE: reactsecure
+           MYSQL_USER: reactuser
+           MYSQL_PASSWORD: StrongPass123!
+         options: >-
+           --health-cmd="mysqladmin ping --silent"
+           --health-interval=10s
+           --health-timeout=5s
+           --health-retries=3
      steps:
        - uses: actions/checkout@v3
 
-+      # DEBUG: show backend folder contents
-+      - name: List backend directory
-+        run: ls -R .
++      - name: Install MySQL client
++        run: sudo apt-get update && sudo apt-get install -y default-mysql-client
 
        - name: Wait for MySQL
          run: |
