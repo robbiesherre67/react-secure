@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: .    # React app lives at repo root
+        working-directory: .    # React app at repo root
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js
@@ -36,25 +36,27 @@ jobs:
           MYSQL_DATABASE: reactsecure
           MYSQL_USER: reactuser
           MYSQL_PASSWORD: StrongPass123!
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
+        # no ports needed—actions will network it in
     steps:
       - uses: actions/checkout@v3
 
       - name: Install MySQL client
+        env:
+          DEBIAN_FRONTEND: noninteractive
         run: |
-          sudo apt-get update
-          sudo apt-get install -y default-mysql-client
+          apt-get update
+          apt-get install -y default-mysql-client
 
-      - name: Wait for MySQL using mysql client
+      - name: Wait for MySQL to be ready
         run: |
-          until mysql -h127.0.0.1 -uroot -prootpassword -e "SELECT 1"; do
-            echo "Waiting for MySQL…"
+          for i in {1..30}; do
+            mysql -hmysql -uroot -prootpassword -e "SELECT 1" && break
+            echo "Waiting for MySQL… ($i)"
             sleep 2
           done
+
+      - name: List backend directory
+        run: ls -R .
 
       - name: Run backend tests
         run: bash test-backend.sh
