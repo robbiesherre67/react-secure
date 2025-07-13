@@ -8,7 +8,7 @@ header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
 // Use Docker environment variables, falling back to defaults if they’re missing
-$host    = getenv('DB_HOST') ?: '127.0.0.1';
+$host    = getenv('DB_HOST') ?: (getenv('CI') ? '127.0.0.1' : 'db');
 $db      = getenv('DB_NAME') ?: 'reactsecure';
 $user    = getenv('DB_USER') ?: 'reactuser';
 $pass    = getenv('DB_PASS') ?: 'StrongPass123!';

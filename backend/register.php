@@ -23,13 +23,11 @@ try {
 
     http_response_code(201);
     echo json_encode(['message' => 'User registered successfully']);
-} catch (\PDOException $e) {
-    if ($e->getCode() === '23000') {
-        // Duplicate entry (username taken)
-        http_response_code(409);
-        echo json_encode(['error' => 'Username already exists']);
-    } else {
-        http_response_code(500);
-        echo json_encode(['error' => 'Server error']);
-    }
-}
+} catch (\Exception $e) {
+    http_response_code(500);
+    echo json_encode([
+      'error'   => 'Server error',
+      'message' => $e->getMessage()
+    ]);
+    exit;
+  }
