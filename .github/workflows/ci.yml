@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: .    # React app at repo root
+        working-directory: .    # React app
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js
@@ -41,7 +41,7 @@ jobs:
           MYSQL_DATABASE: reactsecure
           MYSQL_USER: reactuser
           MYSQL_PASSWORD: StrongPass123!
-        # no ports necessary; GH Actions maps the service to localhost
+
     steps:
       - uses: actions/checkout@v3
 
@@ -53,8 +53,8 @@ jobs:
 
       - name: Install MySQL client
         run: |
-          apt-get update -qq
-          apt-get install -qq -y default-mysql-client
+          sudo apt-get update -qq
+          sudo apt-get install -qq -y default-mysql-client
 
       - name: Wait for MySQL to be ready
         run: |
@@ -64,7 +64,7 @@ jobs:
             sleep 2
           done
 
-      - name: Start PHP built‐in server
+      - name: Start PHP built-in server
         run: php -S 127.0.0.1:8000 -t . &
 
       - name: Wait for PHP endpoint
