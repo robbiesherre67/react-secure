@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: .    # React app at repo root
+        working-directory: . 
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js
@@ -27,7 +27,13 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend  # switch into your backend folder
+        working-directory: ./backend
+    # Inject the DB_* vars so PHP picks them up:
+    env:
+      DB_HOST: mysql
+      DB_NAME: reactsecure
+      DB_USER: reactuser
+      DB_PASS: StrongPass123!
     services:
       mysql:
         image: mysql:8.0
@@ -52,9 +58,9 @@ jobs:
           extensions: pdo_mysql
 
       - name: Start PHP built-in server
-        # serve the backend directory on port 8000 in the background
+        # serve the backend folder on port 8000
         run: php -S 127.0.0.1:8000 -t . &
-      
+
       - name: Wait for PHP server to be ready
         run: |
           for i in {1..20}; do
@@ -64,5 +70,4 @@ jobs:
           done
 
       - name: Run backend tests
-        # now that both MySQL service and PHP server are up, run your test script
         run: bash test-backend.sh
