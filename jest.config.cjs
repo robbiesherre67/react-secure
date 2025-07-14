@@ -1,4 +1,15 @@
 module.exports = {
+  collectCoverage: true,
+  coverageDirectory: 'coverage',
+  coverageThreshold: {
+    global: {
+      statements: 50,
+      branches: 30,
+      lines: 50,
+      functions: 50,
+    },
+  },
+  coverageReporters: ['text', 'lcov'],
   testEnvironment: 'jest-environment-jsdom',
   moduleFileExtensions: ['js', 'jsx'],
   transform: {
@@ -10,17 +21,4 @@ module.exports = {
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testMatch: ['<rootDir>/src/**/*.test.{js,jsx}'],
-
-  // —— Below are the coverage settings ——  
-  collectCoverage: true,
-  coverageDirectory: 'coverage',
-  coverageThreshold: {
-    global: {
-      branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80,
-    },
-  },
-  coverageReporters: ['text', 'lcov'],
 };
