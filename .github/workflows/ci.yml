@@ -17,29 +17,20 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
-        run: npm install
-        working-directory: react-secure
-
-      - name: Run front-end lint
-        run: npm run lint
-        working-directory: react-secure
-
-      - name: Run front-end tests
-        run: npm test
-        working-directory: react-secure
-
-      - name: Generate coverage report
-        run: npm run coverage
-        working-directory: react-secure
-
+      - name: Install & lint & test & coverage (frontend)
+        run: |
+          cd react-secure
+          npm install
+          npm run lint
+          npm test
+          npm run coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: react-secure/coverage/lcov.info
           flags: frontend
-        # no working-directory needed for an action
+          fail_ci_if_error: true
 
   backend:
     runs-on: ubuntu-latest
@@ -58,47 +49,30 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
+
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.1'
-          extensions: pdo_mysql
-
-      - name: Install PHP dev dependencies
-        run: composer install --no-interaction --no-progress
-        working-directory: react-secure/backend
-
-      - name: Run back-end lint
-        run: composer lint
-        working-directory: react-secure/backend
-
-      - name: Wait for MySQL to be ready
+      - name: Set up PHP & run full pipeline (backend)
         run: |
+          cd backend
+          composer install --no-interaction --no-progress
+          composer lint
+          # wait for MySQL
           for i in {1..30}; do
             mysql -h127.0.0.1 -uroot -prootpassword -e "SELECT 1" && break
             echo "Waiting for MySQL… ($i)"
             sleep 2
           done
-
-      - name: Import database schema
-        run: mysql -h127.0.0.1 -uroot -prootpassword reactsecure < schema.sql
-        working-directory: react-secure/backend
-
-      - name: Start PHP built-in server
-        run: php -S 127.0.0.1:8000 -t .
-        working-directory: react-secure/backend
-
-      - name: Wait for PHP endpoint
-        run: |
+          # import schema
+          mysql -h127.0.0.1 -uroot -prootpassword reactsecure < schema.sql
+          # start server in background
+          php -S 127.0.0.1:8000 -t . &
+          # wait for PHP endpoint
           for i in {1..20}; do
             curl --silent --fail http://127.0.0.1:8000/register.php && break
             echo "Waiting for PHP… ($i)"
             sleep 2
           done
-
-      - name: Run backend tests
-        run: bash test-backend.sh
-        working-directory: react-secure/backend
+          # run tests
+          bash test-backend.sh
