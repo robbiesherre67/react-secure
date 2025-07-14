@@ -12,19 +12,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install & lint & test & coverage (frontend)
+      - name: Frontend: install, lint, test & coverage
         run: |
           cd react-secure
           npm install
           npm run lint
           npm test
           npm run coverage
-      - name: Upload coverage to Codecov
+
+      - name: Upload frontend coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -53,26 +49,26 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up PHP & run full pipeline (backend)
+      - name: Backend: install, lint, migrate & test
         run: |
-          cd backend
+          cd react-secure/backend
           composer install --no-interaction --no-progress
           composer lint
-          # wait for MySQL
+          # Wait for MySQL
           for i in {1..30}; do
             mysql -h127.0.0.1 -uroot -prootpassword -e "SELECT 1" && break
             echo "Waiting for MySQL… ($i)"
             sleep 2
           done
-          # import schema
+          # Import schema
           mysql -h127.0.0.1 -uroot -prootpassword reactsecure < schema.sql
-          # start server in background
+          # Start PHP server in background
           php -S 127.0.0.1:8000 -t . &
-          # wait for PHP endpoint
+          # Wait for API
           for i in {1..20}; do
             curl --silent --fail http://127.0.0.1:8000/register.php && break
             echo "Waiting for PHP… ($i)"
             sleep 2
           done
-          # run tests
+          # Run your test script
           bash test-backend.sh
