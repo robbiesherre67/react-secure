@@ -1,6 +1,5 @@
-// src/__tests__/Dashboard.test.jsx
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import Dashboard from '../pages/Dashboard';
 
@@ -13,14 +12,12 @@ beforeEach(() => {
   );
 });
 
-test('renders Dashboard heading and welcome', async () => {
+test('renders Dashboard welcome message', async () => {
   render(
     <MemoryRouter>
       <Dashboard />
     </MemoryRouter>
   );
-  // wait for the greeting to appear
-  await waitFor(() =>
-    expect(screen.getByText(/welcome, alice/i)).toBeInTheDocument()
-  );
+  const greeting = await screen.findByText(/welcome, alice/i);
+  expect(greeting).toBeInTheDocument();
 });

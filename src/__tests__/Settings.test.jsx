@@ -1,6 +1,5 @@
-// src/__tests__/Settings.test.jsx
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import Settings from '../pages/Settings';
 
 beforeEach(() => {
@@ -12,10 +11,8 @@ beforeEach(() => {
   );
 });
 
-test('renders Settings heading and email input', async () => {
+test('renders Settings email input', async () => {
   render(<Settings />);
-  // wait until the input is populated
-  await waitFor(() =>
-    expect(screen.getByDisplayValue('me@example.com')).toBeInTheDocument()
-  );
+  const input = await screen.findByDisplayValue('me@example.com');
+  expect(input).toBeInTheDocument();
 });

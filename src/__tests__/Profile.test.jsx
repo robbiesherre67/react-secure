@@ -1,6 +1,5 @@
-// src/__tests__/Profile.test.jsx
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import Profile from '../pages/Profile';
 
@@ -13,14 +12,12 @@ beforeEach(() => {
   );
 });
 
-test('renders Profile heading and username input', async () => {
+test('renders Profile username input', async () => {
   render(
     <MemoryRouter>
       <Profile />
     </MemoryRouter>
   );
-  // wait until the input is populated
-  await waitFor(() =>
-    expect(screen.getByDisplayValue('bob')).toBeInTheDocument()
-  );
+  const input = await screen.findByDisplayValue('bob');
+  expect(input).toBeInTheDocument();
 });
