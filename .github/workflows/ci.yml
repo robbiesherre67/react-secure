@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./react-secure  # front-end lives here
+        working-directory: .   # your React app lives at repo root
     steps:
       - uses: actions/checkout@v3
 
@@ -24,8 +24,7 @@ jobs:
         run: npm install
 
       - name: Run front-end lint
-        # explicitly point at your CommonJS config
-        run: npx eslint -c .eslintrc.cjs "src/**/*.{js,jsx,ts,tsx}"
+        run: npm run lint
 
       - name: Run front-end tests
         run: npm test
@@ -45,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./react-secure/backend  # PHP backend folder
+        working-directory: backend  # PHP backend folder
     env:
       DB_HOST: 127.0.0.1
       DB_NAME: reactsecure
@@ -91,11 +90,10 @@ jobs:
           done
 
       - name: Import database schema
-        run: |
-          mysql -h127.0.0.1 -uroot -prootpassword reactsecure < schema.sql
+        run: mysql -h127.0.0.1 -uroot -prootpassword reactsecure < schema.sql
 
       - name: Start PHP built-in server
-        run: php -S 127.0.0.1:8000 -t .
+        run: php -S 127.0.0.1:8000 -t . &
 
       - name: Wait for PHP endpoint
         run: |
