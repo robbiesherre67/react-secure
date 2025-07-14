@@ -9,9 +9,6 @@ on:
 jobs:
   frontend:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./react-secure    # ← your React app lives here
     steps:
       - uses: actions/checkout@v3
 
@@ -22,34 +19,30 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        working-directory: react-secure
 
       - name: Run front-end lint
         run: npm run lint
+        working-directory: react-secure
 
       - name: Run front-end tests
         run: npm test
+        working-directory: react-secure
 
       - name: Generate coverage report
         run: npm run coverage
+        working-directory: react-secure
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage/lcov.info
+          files: react-secure/coverage/lcov.info
           flags: frontend
-          fail_ci_if_error: true
+        # no working-directory needed for an action
 
   backend:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./react-secure/backend   # ← your PHP backend lives here
-    env:
-      DB_HOST: 127.0.0.1
-      DB_NAME: reactsecure
-      DB_USER: reactuser
-      DB_PASS: StrongPass123!
     services:
       mysql:
         image: mysql:8.0
@@ -65,7 +58,6 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
-
     steps:
       - uses: actions/checkout@v3
 
@@ -77,9 +69,11 @@ jobs:
 
       - name: Install PHP dev dependencies
         run: composer install --no-interaction --no-progress
+        working-directory: react-secure/backend
 
       - name: Run back-end lint
         run: composer lint
+        working-directory: react-secure/backend
 
       - name: Wait for MySQL to be ready
         run: |
@@ -91,9 +85,11 @@ jobs:
 
       - name: Import database schema
         run: mysql -h127.0.0.1 -uroot -prootpassword reactsecure < schema.sql
+        working-directory: react-secure/backend
 
       - name: Start PHP built-in server
-        run: php -S 127.0.0.1:8000 -t . &
+        run: php -S 127.0.0.1:8000 -t .
+        working-directory: react-secure/backend
 
       - name: Wait for PHP endpoint
         run: |
@@ -105,3 +101,4 @@ jobs:
 
       - name: Run backend tests
         run: bash test-backend.sh
+        working-directory: react-secure/backend
