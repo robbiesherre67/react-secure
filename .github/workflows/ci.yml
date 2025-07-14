@@ -12,19 +12,28 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Frontend: install, lint, test & coverage
-        run: |
-          cd react-secure
-          npm install
-          npm run lint
-          npm test
-          npm run coverage
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-      - name: Upload frontend coverage to Codecov
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Coverage
+        run: npm run coverage
+
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: react-secure/coverage/lcov.info
+          files: coverage/lcov.info
           flags: frontend
           fail_ci_if_error: true
 
@@ -49,26 +58,37 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Backend: install, lint, migrate & test
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: pdo_mysql
+
+      - name: Install dependencies & lint
         run: |
-          cd react-secure/backend
+          cd backend
           composer install --no-interaction --no-progress
           composer lint
-          # Wait for MySQL
+
+      - name: Wait for MySQL
+        run: |
           for i in {1..30}; do
             mysql -h127.0.0.1 -uroot -prootpassword -e "SELECT 1" && break
-            echo "Waiting for MySQL… ($i)"
+            echo "Waiting for MySQL... ($i)"
             sleep 2
           done
-          # Import schema
-          mysql -h127.0.0.1 -uroot -prootpassword reactsecure < schema.sql
-          # Start PHP server in background
+
+      - name: Import schema
+        run: |
+          mysql -h127.0.0.1 -uroot -prootpassword reactsecure < backend/schema.sql
+
+      - name: Start server & run tests
+        run: |
+          cd backend
           php -S 127.0.0.1:8000 -t . &
-          # Wait for API
           for i in {1..20}; do
-            curl --silent --fail http://127.0.0.1:8000/register.php && break
-            echo "Waiting for PHP… ($i)"
+            curl --fail --silent http://127.0.0.1:8000/register.php && break
+            echo "Waiting for PHP... ($i)"
             sleep 2
           done
-          # Run your test script
           bash test-backend.sh
