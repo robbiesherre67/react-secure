@@ -9,9 +9,6 @@ on:
 jobs:
   frontend:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .   # your React app is at the repo root
     steps:
       - uses: actions/checkout@v3
 
@@ -22,6 +19,7 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        # runs in $GITHUB_WORKSPACE by default, where package.json & src/ live
 
       - name: Lint
         run: npm run lint
@@ -42,9 +40,6 @@ jobs:
 
   backend:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./backend   # your PHP lives in backend/
     services:
       mysql:
         image: mysql:8.0
@@ -72,6 +67,7 @@ jobs:
 
       - name: Install & lint
         run: |
+          cd backend
           composer install --no-interaction --no-progress
           composer lint
 
@@ -84,10 +80,12 @@ jobs:
           done
 
       - name: Import schema
-        run: mysql -h127.0.0.1 -uroot -prootpassword reactsecure < schema.sql
+        run: |
+          mysql -h127.0.0.1 -uroot -prootpassword reactsecure < backend/schema.sql
 
       - name: Start server & test
         run: |
+          cd backend
           php -S 127.0.0.1:8000 -t . &
           for i in {1..20}; do
             curl --silent --fail http://127.0.0.1:8000/register.php && break
