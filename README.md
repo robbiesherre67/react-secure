@@ -1,4 +1,5 @@
 # iDesignTEK-Secure
+![Coverage](https://img.shields.io/badge/coverage-⏺️–?style=flat)
 
 iDesignTEK-Secure is a full‑stack authentication demo application built with React, Tailwind CSS, React Hook Form & Zod on the front end, and PHP + MySQL on the back end. It showcases a secure user registration and login flow, complete with form validation, unit tests, and a RESTful API.
 
