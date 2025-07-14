@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: .   # your React app lives at repo root
+        working-directory: ./react-secure    # ← your React app lives here
     steps:
       - uses: actions/checkout@v3
 
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: backend  # PHP backend folder
+        working-directory: ./react-secure/backend   # ← your PHP backend lives here
     env:
       DB_HOST: 127.0.0.1
       DB_NAME: reactsecure
