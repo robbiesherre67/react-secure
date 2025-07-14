@@ -9,6 +9,9 @@ on:
 jobs:
   frontend:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .   # your React app is at the repo root
     steps:
       - uses: actions/checkout@v3
 
@@ -39,6 +42,9 @@ jobs:
 
   backend:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend   # your PHP lives in backend/
     services:
       mysql:
         image: mysql:8.0
@@ -64,9 +70,8 @@ jobs:
           php-version: '8.1'
           extensions: pdo_mysql
 
-      - name: Install dependencies & lint
+      - name: Install & lint
         run: |
-          cd backend
           composer install --no-interaction --no-progress
           composer lint
 
@@ -74,21 +79,19 @@ jobs:
         run: |
           for i in {1..30}; do
             mysql -h127.0.0.1 -uroot -prootpassword -e "SELECT 1" && break
-            echo "Waiting for MySQL... ($i)"
+            echo "Waiting for MySQL… ($i)"
             sleep 2
           done
 
       - name: Import schema
-        run: |
-          mysql -h127.0.0.1 -uroot -prootpassword reactsecure < backend/schema.sql
+        run: mysql -h127.0.0.1 -uroot -prootpassword reactsecure < schema.sql
 
-      - name: Start server & run tests
+      - name: Start server & test
         run: |
-          cd backend
           php -S 127.0.0.1:8000 -t . &
           for i in {1..20}; do
-            curl --fail --silent http://127.0.0.1:8000/register.php && break
-            echo "Waiting for PHP... ($i)"
+            curl --silent --fail http://127.0.0.1:8000/register.php && break
+            echo "Waiting for PHP… ($i)"
             sleep 2
           done
           bash test-backend.sh
