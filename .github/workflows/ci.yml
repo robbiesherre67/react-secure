@@ -1,4 +1,31 @@
+name: CI
+
+# Trigger the workflow
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm ci
+      - name: Run front-end tests
+        run: npm test
+
   backend:
     runs-on: ubuntu-latest
     defaults:
@@ -27,27 +54,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
           extensions: pdo_mysql
-
-      - name: Wait for MySQL to be ready
+      - name: Wait for MySQL
         run: |
           for i in {1..30}; do
             mysqladmin ping -h"${{ env.DB_HOST }}" -u"${{ env.DB_USER }}" -p"${{ env.DB_PASS }}" --silent && break
             echo "Waiting for MySQL… ($i)"
             sleep 2
           done
-
-      - name: Import database schema
+      - name: Import schema
         run: mysql -h"${{ env.DB_HOST }}" -u"${{ env.DB_USER }}" -p"${{ env.DB_PASS }}" ${{ env.DB_NAME }} < schema.sql
-
       - name: Start PHP server
         run: php -S 0.0.0.0:8000 -t . &
-
       - name: Run backend API tests
-        run: |
-          ./test-backend.sh
+        run: ./test-backend.sh
