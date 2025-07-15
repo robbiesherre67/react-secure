@@ -1,6 +1,5 @@
 name: CI
 
-# Trigger the workflow
 on:
   push:
     branches:
@@ -32,7 +31,7 @@ jobs:
       run:
         working-directory: ./backend
     env:
-      DB_HOST: mysql
+      DB_HOST: 127.0.0.1
       DB_NAME: reactsecure
       DB_USER: reactuser
       DB_PASS: StrongPass123!
@@ -54,21 +53,34 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
           extensions: pdo_mysql
-      - name: Wait for MySQL
+
+      - name: Wait for MySQL to be ready
         run: |
           for i in {1..30}; do
-            mysqladmin ping -h"${{ env.DB_HOST }}" -u"${{ env.DB_USER }}" -p"${{ env.DB_PASS }}" --silent && break
+            mysqladmin ping \
+              -h "${{ env.DB_HOST }}" \
+              -u "${{ env.DB_USER }}" \
+              -p"${{ env.DB_PASS }}" --silent && break
             echo "Waiting for MySQL… ($i)"
             sleep 2
           done
-      - name: Import schema
-        run: mysql -h"${{ env.DB_HOST }}" -u"${{ env.DB_USER }}" -p"${{ env.DB_PASS }}" ${{ env.DB_NAME }} < schema.sql
-      - name: Start PHP server
+
+      - name: Import database schema
+        run: |
+          mysql \
+            -h "${{ env.DB_HOST }}" \
+            -u "${{ env.DB_USER }}" \
+            -p"${{ env.DB_PASS }}" \
+            "${{ env.DB_NAME }}" < schema.sql
+
+      - name: Start PHP built-in server
         run: php -S 0.0.0.0:8000 -t . &
+
       - name: Run backend API tests
         run: ./test-backend.sh
