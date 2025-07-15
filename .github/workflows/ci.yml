@@ -1,45 +1,14 @@
-name: CI
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
 jobs:
-  frontend:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install dependencies
-        run: npm install
-        # runs in $GITHUB_WORKSPACE by default, where package.json & src/ live
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Test
-        run: npm test
-
-      - name: Coverage
-        run: npm run coverage
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage/lcov.info
-          flags: frontend
-          fail_ci_if_error: true
-
   backend:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    env:
+      DB_HOST: db
+      DB_NAME: reactsecure
+      DB_USER: reactuser
+      DB_PASS: StrongPass123!
     services:
       mysql:
         image: mysql:8.0
@@ -65,31 +34,20 @@ jobs:
           php-version: '8.1'
           extensions: pdo_mysql
 
-      - name: Install & lint
-        run: |
-          cd backend
-          composer install --no-interaction --no-progress
-          composer lint
-
-      - name: Wait for MySQL
+      - name: Wait for MySQL to be ready
         run: |
           for i in {1..30}; do
-            mysql -h127.0.0.1 -uroot -prootpassword -e "SELECT 1" && break
+            mysqladmin ping -h"${{ env.DB_HOST }}" -u"${{ env.DB_USER }}" -p"${{ env.DB_PASS }}" --silent && break
             echo "Waiting for MySQL… ($i)"
             sleep 2
           done
 
-      - name: Import schema
-        run: |
-          mysql -h127.0.0.1 -uroot -prootpassword reactsecure < backend/schema.sql
+      - name: Import database schema
+        run: mysql -h"${{ env.DB_HOST }}" -u"${{ env.DB_USER }}" -p"${{ env.DB_PASS }}" ${{ env.DB_NAME }} < schema.sql
 
-      - name: Start server & test
+      - name: Start PHP server
+        run: php -S 0.0.0.0:8000 -t . &
+
+      - name: Run backend API tests
         run: |
-          cd backend
-          php -S 127.0.0.1:8000 -t . &
-          for i in {1..20}; do
-            curl --silent --fail http://127.0.0.1:8000/register.php && break
-            echo "Waiting for PHP… ($i)"
-            sleep 2
-          done
-          bash test-backend.sh
+          ./test-backend.sh

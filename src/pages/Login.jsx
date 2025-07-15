@@ -23,10 +23,12 @@ export default function Login() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-      const payload = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(payload.error || 'Login failed');
 
-      toast.success('Logged in successfully!');
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Login failed');
+      }
+
       navigate('/dashboard');
     } catch (e) {
       toast.error(e.message);
@@ -41,32 +43,45 @@ export default function Login() {
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {/* Username Field */}
           <div>
-            <label className="block text-gray-700">Username</label>
+            <label htmlFor="username" className="block text-gray-700">
+              Username
+            </label>
             <input
+              id="username"
               type="text"
               {...register('username')}
               className="mt-1 block w-full rounded-lg border-gray-300 bg-gray-50 px-4 py-3 
                          focus:border-green-400 focus:ring-2 focus:ring-green-200 transition"
             />
             {errors.username && (
-              <p className="mt-1 text-sm text-red-600">{errors.username.message}</p>
+              <p className="mt-1 text-sm text-red-600">
+                {errors.username.message}
+              </p>
             )}
           </div>
 
+          {/* Password Field */}
           <div>
-            <label className="block text-gray-700">Password</label>
+            <label htmlFor="password" className="block text-gray-700">
+              Password
+            </label>
             <input
+              id="password"
               type="password"
               {...register('password')}
               className="mt-1 block w-full rounded-lg border-gray-300 bg-gray-50 px-4 py-3 
                          focus:border-green-400 focus:ring-2 focus:ring-green-200 transition"
             />
             {errors.password && (
-              <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+              <p className="mt-1 text-sm text-red-600">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={isSubmitting}

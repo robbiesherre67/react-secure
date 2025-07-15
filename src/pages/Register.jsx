@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 export default function Register() {
   const navigate = useNavigate();
   const {
-    register: bind,
+    register,
     handleSubmit,
     formState: { errors, isSubmitting }
   } = useForm({ resolver: zodResolver(authSchema) });
@@ -17,17 +17,14 @@ export default function Register() {
     try {
       const res = await fetch('/api/register.php', {
         method: 'POST',
-        credentials: 'include',              // include cookies if any
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-
       if (!res.ok) {
-        // try to parse a JSON error message
         const err = await res.json().catch(() => ({}));
         throw new Error(err.error || 'Registration failed');
       }
-
       toast.success('Account created! Please log in.');
       navigate('/login');
     } catch (e) {
@@ -43,37 +40,49 @@ export default function Register() {
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          {/* Username */}
+          {/* Username Field */}
           <div>
-            <label className="block text-gray-700">Username</label>
+            <label htmlFor="username" className="block text-gray-700">
+              Username
+            </label>
             <input
-              type="text"
-              {...bind('username')}
-              className="mt-1 block w-full rounded-lg border-gray-300 bg-gray-50 px-4 py-3"
+              id="username"
+              {...register('username')}
+              className="mt-1 block w-full rounded-lg border-gray-300 bg-gray-50 px-4 py-3 
+                         focus:border-blue-400 focus:ring-2 focus:ring-blue-200 transition"
             />
             {errors.username && (
-              <p className="mt-1 text-sm text-red-600">{errors.username.message}</p>
+              <p className="mt-1 text-sm text-red-600">
+                {errors.username.message}
+              </p>
             )}
           </div>
 
-          {/* Password */}
+          {/* Password Field */}
           <div>
-            <label className="block text-gray-700">Password</label>
+            <label htmlFor="password" className="block text-gray-700">
+              Password
+            </label>
             <input
+              id="password"
               type="password"
-              {...bind('password')}
-              className="mt-1 block w-full rounded-lg border-gray-300 bg-gray-50 px-4 py-3"
+              {...register('password')}
+              className="mt-1 block w-full rounded-lg border-gray-300 bg-gray-50 px-4 py-3 
+                         focus:border-blue-400 focus:ring-2 focus:ring-blue-200 transition"
             />
             {errors.password && (
-              <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+              <p className="mt-1 text-sm text-red-600">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
-          {/* Submit */}
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold 
+                       hover:bg-blue-700 active:scale-95 transition-transform disabled:opacity-50"
           >
             {isSubmitting ? 'Signing Up…' : 'Sign Up'}
           </button>
