@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "test": "jest --watchAll=false --config=jest.config.cjs",
-    "coverage": "jest --config=jest.config.cjs"
+    "coverage": "jest --config=jest.config.cjs",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
@@ -32,6 +34,7 @@
     "@vitejs/plugin-react": "^4.5.2",
     "autoprefixer": "^10.4.19",
     "babel-jest": "^30.0.4",
+    "cypress": "^14.5.1",
     "eslint": "^8.57.1",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-react-hooks": "^5.2.0",
