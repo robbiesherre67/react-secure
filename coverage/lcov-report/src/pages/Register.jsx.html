@@ -280,7 +280,7 @@ export default function Register() {
 &nbsp;
   const onSubmit = async data =&gt; {
     try {
-      const res = await fetch('/api/register.php', {
+      const res = await fetch('/backend/register.php', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

@@ -7,7 +7,7 @@ export default function Settings() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/settings.php', { credentials: 'include' })
+    fetch('/backend/settings.php', { credentials: 'include' })
       .then(async res => {
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data.error || 'Failed to load settings');
@@ -24,7 +24,7 @@ export default function Settings() {
   const handleSave = async e => {
     e.preventDefault();
     try {
-      const res = await fetch('/api/settings.php', {
+      const res = await fetch('/backend/settings.php', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

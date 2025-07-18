@@ -9,7 +9,7 @@ export default function Profile() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('/api/user.php', { credentials: 'include' })
+    fetch('/backend/user.php', { credentials: 'include' })
       .then(res =>
         res
           .json()
@@ -25,7 +25,7 @@ export default function Profile() {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      const res = await fetch('/api/update-profile.php', {
+      const res = await fetch('/backend/update-profile.php', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

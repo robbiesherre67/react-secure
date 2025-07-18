@@ -41,7 +41,7 @@ test('successful registration calls navigate("/login")', async () => {
 
   await waitFor(() => {
     expect(global.fetch).toHaveBeenCalledWith(
-      '/api/register.php',
+      '/backend/register.php',
       expect.objectContaining({
         method: 'POST',
         credentials: 'include',

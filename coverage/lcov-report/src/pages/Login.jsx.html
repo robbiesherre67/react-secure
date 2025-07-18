@@ -290,7 +290,7 @@ export default function Login() {
 &nbsp;
   const onSubmit = async data =&gt; {
     try {
-      const res = await fetch('/api/login.php', {
+      const res = await fetch('/backend/login.php', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

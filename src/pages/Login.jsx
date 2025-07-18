@@ -1,12 +1,14 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { authSchema } from '../utils/validation';
-import { useNavigate, Link } from 'react-router-dom';
-import toast from 'react-hot-toast';
+import React, { useState } from 'react';
+import { useForm }          from 'react-hook-form';
+import { zodResolver }      from '@hookform/resolvers/zod';
+import { authSchema }       from '../utils/validation';
+import { useNavigate, Link }from 'react-router-dom';
+import toast               from 'react-hot-toast';
 
 export default function Login() {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -17,18 +19,21 @@ export default function Login() {
 
   const onSubmit = async data => {
     try {
-      const res = await fetch('/api/login.php', {
+      const res = await fetch('/backend/login.php', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
 
+      const payload = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || 'Login failed');
+        throw new Error(payload.error || 'Login failed');
       }
 
+      // success: mark logged in and redirect
+      localStorage.setItem('isLoggedIn', 'true');
+      toast.success('Logged in successfully!');
       navigate('/dashboard');
     } catch (e) {
       toast.error(e.message);
@@ -52,7 +57,7 @@ export default function Login() {
               id="username"
               type="text"
               {...register('username')}
-              className="mt-1 block w-full rounded-lg border-gray-300 bg-gray-50 px-4 py-3 
+              className="mt-1 block w-full rounded-lg border-gray-300 bg-gray-50 px-4 py-3
                          focus:border-green-400 focus:ring-2 focus:ring-green-200 transition"
             />
             {errors.username && (
@@ -63,17 +68,24 @@ export default function Login() {
           </div>
 
           {/* Password Field */}
-          <div>
+          <div className="relative">
             <label htmlFor="password" className="block text-gray-700">
               Password
             </label>
             <input
               id="password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               {...register('password')}
               className="mt-1 block w-full rounded-lg border-gray-300 bg-gray-50 px-4 py-3 
-                         focus:border-green-400 focus:ring-2 focus:ring-green-200 transition"
+                         focus:border-green-400 focus:ring-2 focus:ring-green-200 transition pr-12"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(v => !v)}
+              className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
             {errors.password && (
               <p className="mt-1 text-sm text-red-600">
                 {errors.password.message}
@@ -85,7 +97,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold 
+            className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold
                        hover:bg-green-700 active:scale-95 transition-transform disabled:opacity-50"
           >
             {isSubmitting ? 'Logging In…' : 'Log In'}

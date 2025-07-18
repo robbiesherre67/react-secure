@@ -1,6 +1,13 @@
 <?php
+
 session_start();
+header("Content-Type: application/json");
+
+// destroy session
+$_SESSION = [];
+if (ini_get("session.use_cookies")) {
+  setcookie(session_name(), '', time() - 42000, '/');
+}
 session_destroy();
-header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json; charset=UTF-8");
-echo json_encode(['message' => 'Logged out']);
+
+echo json_encode(['success'=>true]);

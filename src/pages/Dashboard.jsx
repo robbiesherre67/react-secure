@@ -10,7 +10,7 @@ export default function Dashboard() {
   useEffect(() => {
     async function loadUser() {
       try {
-        const res = await fetch('/api/user.php', {
+        const res = await fetch('/backend/user.php', {
           credentials: 'include',    // ← ensure session cookie is sent
         });
         console.log('user.php status:', res.status);
@@ -57,7 +57,7 @@ export default function Dashboard() {
         {/* Add a Logout button */}
         <button
           onClick={async () => {
-            await fetch('/api/logout.php', {
+            await fetch('/backend/logout.php', {
               credentials: 'include',
             });
             navigate('/login');

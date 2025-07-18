@@ -219,7 +219,7 @@ export default function Dashboard() {
   useEffect(() =&gt; {
     async function loadUser() {
       try {
-        const res = await fetch('/api/user.php', {
+        const res = await fetch('/backend/user.php', {
           credentials: 'include',    // ← ensure session cookie is sent
         });
         console.log('user.php status:', res.status);
@@ -266,7 +266,7 @@ export default function Dashboard() {
         {/* Add a Logout button */}
         &lt;button
           onClick={<span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {
-<span class="cstat-no" title="statement not covered" >            await fetch('/api/logout.php', {</span>
+<span class="cstat-no" title="statement not covered" >            await fetch('/backend/logout.php', {</span>
               credentials: 'include',
             });
 <span class="cstat-no" title="statement not covered" >            navigate('/login');</span>
