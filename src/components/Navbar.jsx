@@ -20,7 +20,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <Link to="/" className="flex items-center space-x-2">
-            <img alt="Logo" className="h-8 w-8" src="/logo.png" />
+            <img alt="Logo" className="h-100 w-100" src="/logo.png" />
             <span className="text-2xl font-bold text-blue-600">
               ReactSecure
             </span>

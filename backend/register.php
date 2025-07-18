@@ -1,5 +1,4 @@
 <?php
-// backend/register.php
 
 // DEV: show all errors
 ini_set('display_errors',1);
