@@ -41,7 +41,7 @@ test('successful login calls navigate("/dashboard")', async () => {
 
   await waitFor(() => {
     expect(global.fetch).toHaveBeenCalledWith(
-      '/api/login.php',
+      '/backend/login.php',
       expect.objectContaining({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

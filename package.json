@@ -45,6 +45,7 @@
     "parse5": "^8.0.0",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",
-    "vite": "4.4.9"
+    "vite": "4.4.9",
+    "whatwg-fetch": "^3.6.20"
   }
 }
