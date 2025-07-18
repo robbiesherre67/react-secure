@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">91.66% </span>
+                <span class="strong">82.35% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>11/12</span>
+                <span class='fraction'>14/17</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">70% </span>
+                <span class="strong">64.28% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>7/10</span>
+                <span class='fraction'>9/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">66.66% </span>
+                <span class="strong">40% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/3</span>
+                <span class='fraction'>2/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">93.33% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>11/11</span>
+                <span class='fraction'>14/15</span>
             </div>
         
             
@@ -167,7 +167,19 @@
 <a name='L102'></a><a href='#L102'>102</a>
 <a name='L103'></a><a href='#L103'>103</a>
 <a name='L104'></a><a href='#L104'>104</a>
-<a name='L105'></a><a href='#L105'>105</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -176,6 +188,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -194,10 +208,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -245,6 +262,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -271,15 +289,23 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { authSchema } from '../utils/validation';
-import { useNavigate, Link } from 'react-router-dom';
-import toast from 'react-hot-toast';
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useState } from 'react';
+import { useForm }          from 'react-hook-form';
+import { zodResolver }      from '@hookform/resolvers/zod';
+import { authSchema }       from '../utils/validation';
+import { useNavigate, Link }from 'react-router-dom';
+import toast               from 'react-hot-toast';
 &nbsp;
 export default function Login() {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+&nbsp;
   const {
     register,
     handleSubmit,
@@ -297,11 +323,14 @@ export default function Login() {
         body: JSON.stringify(data)
       });
 &nbsp;
+      const payload = await res.json().catch(<span class="fstat-no" title="function not covered" >()</span> =&gt; (<span class="cstat-no" title="statement not covered" >{})</span>);
       if (!res.ok) {
-        const err = await res.json().catch(<span class="fstat-no" title="function not covered" >()</span> =&gt; (<span class="cstat-no" title="statement not covered" >{})</span>);
-        throw new Error(err.error || <span class="branch-1 cbranch-no" title="branch not covered" >'Login failed')</span>;
+        throw new Error(payload.error || <span class="branch-1 cbranch-no" title="branch not covered" >'Login failed')</span>;
       }
 &nbsp;
+      // success: mark logged in and redirect
+      localStorage.setItem('isLoggedIn', 'true');
+      toast.success('Logged in successfully!');
       navigate('/dashboard');
     } catch (e) {
       toast.error(e.message);
@@ -325,7 +354,7 @@ export default function Login() {
               id="username"
               type="text"
               {...register('username')}
-              className="mt-1 block w-full rounded-lg border-gray-300 bg-gray-50 px-4 py-3 
+              className="mt-1 block w-full rounded-lg border-gray-300 bg-gray-50 px-4 py-3
                          focus:border-green-400 focus:ring-2 focus:ring-green-200 transition"
             /&gt;
             {errors.username &amp;&amp; (
@@ -336,17 +365,24 @@ export default function Login() {
           &lt;/div&gt;
 &nbsp;
           {/* Password Field */}
-          &lt;div&gt;
+          &lt;div className="relative"&gt;
             &lt;label htmlFor="password" className="block text-gray-700"&gt;
               Password
             &lt;/label&gt;
             &lt;input
               id="password"
-              type="password"
+              type={showPassword ? <span class="branch-0 cbranch-no" title="branch not covered" >'text' </span>: 'password'}
               {...register('password')}
               className="mt-1 block w-full rounded-lg border-gray-300 bg-gray-50 px-4 py-3 
-                         focus:border-green-400 focus:ring-2 focus:ring-green-200 transition"
+                         focus:border-green-400 focus:ring-2 focus:ring-green-200 transition pr-12"
             /&gt;
+            &lt;button
+              type="button"
+              onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setShowPassword(<span class="fstat-no" title="function not covered" >v </span>=&gt; <span class="cstat-no" title="statement not covered" >!v)</span>}</span>
+              className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"
+            &gt;
+              {showPassword ? <span class="branch-0 cbranch-no" title="branch not covered" >'Hide' </span>: 'Show'}
+            &lt;/button&gt;
             {errors.password &amp;&amp; (
 <span class="branch-1 cbranch-no" title="branch not covered" >              &lt;p className="mt-1 text-sm text-red-600"&gt;</span>
                 {errors.password.message}
@@ -358,7 +394,7 @@ export default function Login() {
           &lt;button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold 
+            className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold
                        hover:bg-green-700 active:scale-95 transition-transform disabled:opacity-50"
           &gt;
             {isSubmitting ? 'Logging In…' : 'Log In'}
@@ -382,7 +418,7 @@ export default function Login() {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-15T20:42:25.985Z
+                at 2025-07-18T17:46:59.372Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
